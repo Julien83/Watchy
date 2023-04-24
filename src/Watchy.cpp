@@ -150,8 +150,15 @@ void Watchy::handleButtonPress() {
     } else if (guiState == FW_UPDATE_STATE) {
       showMenu(menuIndex, false); // exit to menu if already in app
     } else if (guiState == WATCHFACE_STATE) {
+      showCalendar();
+      return;
+    }else if (guiState == CALENDAR_STATE) {
+      RTC.read(currentTime);
+      showWatchFace(false);
       return;
     }
+
+    
   }
   // Up Button
   else if (wakeupBit & UP_BTN_MASK) {
@@ -287,6 +294,16 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
 
   guiState = MAIN_MENU_STATE;
   alreadyInMenu = false;
+}
+
+void Watchy::showCalendar(void) {
+  display.setFullWindow();
+  display.fillScreen(GxEPD_BLACK);
+  display.setFont(&FreeMonoBold9pt7b);
+  display.setTextColor(GxEPD_WHITE);
+  display.println("Calendar");
+  display.display();
+  guiState = CALENDAR_STATE;
 }
 
 void Watchy::showFastMenu(byte menuIndex) {
