@@ -40,6 +40,12 @@ void Watchy::init(String datetime) {
           vibMotor(75, 4);
         }
       }
+      if (settings.vibrateHalfOClock) {
+        if (currentTime.Minute == 30) {
+          // The RTC wakes us up once per minute
+          vibMotor(75, 2);
+        }
+      }
       break;
     case MAIN_MENU_STATE:
       // Return to watchface if in menu for more than one tick
@@ -348,7 +354,12 @@ void Watchy::showAbout() {
   display.print(hours);
   display.print("h");
   display.print(minutes);
-  display.print("m");    
+  display.println("m");   
+
+  display.print("CPU Temp: ");
+  display.print(minutes);
+  display.println("C");  
+
   display.display(false); // full refresh
 
   guiState = APP_STATE;
