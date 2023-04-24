@@ -138,6 +138,8 @@ void Watchy::handleButtonPress() {
       }
     } else if (guiState == FW_UPDATE_STATE) {
       updateFWBegin();
+    }else if (guiState == CALENDAR_STATE) {
+      return;
     }
   }
   // Back Button
@@ -170,6 +172,8 @@ void Watchy::handleButtonPress() {
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
       return;
+    } else if (guiState == CALENDAR_STATE) {
+      return;
     }
   }
   // Down Button
@@ -182,11 +186,13 @@ void Watchy::handleButtonPress() {
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
       return;
+    } else if (guiState == CALENDAR_STATE) {
+      return;
     }
   }
 
   /***************** fast menu *****************/
-  bool timeout     = false;
+  /*bool timeout     = false;
   long lastTimeout = millis();
   pinMode(MENU_BTN_PIN, INPUT);
   pinMode(BACK_BTN_PIN, INPUT);
@@ -260,12 +266,12 @@ void Watchy::handleButtonPress() {
         }
       }
     }
-  }
+  }*/
 }
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
   display.setFullWindow();
-  display.fillScreen(GxEPD_BLACK);
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
   display.setFont(&FreeMonoBold9pt7b);
 
   int16_t x1, y1;
@@ -281,11 +287,11 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
     display.setCursor(0, yPos);
     if (i == menuIndex) {
       display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w, &h);
-      display.fillRect(x1 - 1, y1 - 10, 200, h + 15, GxEPD_WHITE);
-      display.setTextColor(GxEPD_BLACK);
+      display.fillRect(x1 - 1, y1 - 10, 200, h + 15, (DARKMODE ? GxEPD_WHITE : GxEPD_BLACK));
+      display.setTextColor(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
       display.println(menuItems[i]);
     } else {
-      display.setTextColor(GxEPD_WHITE);
+      display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
       display.println(menuItems[i]);
     }
   }
@@ -297,11 +303,154 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
 }
 
 void Watchy::showCalendar(void) {
+
+  int monthLength = 0;
+  int startDay = 0; // Sunday's value is 0, Saturday is 6
+  String week1 ="";
+  String week2 ="";
+  String week3 ="";
+  String week4 ="";
+  String week5 ="";
+  int newWeekStart = 0; // used to show start of next week of the month
+  char monthString2[37]= {"JanFebMarAprMayJunJulAugSepOctNovDec"};
+  int  monthIndex2[122] ={0,3,6,9,12,15,18,21,24,27,30,33};
+  char monthName2[3]="";
+  int16_t x = 5;
+  int16_t y = 10;
+
+
   display.setFullWindow();
-  display.fillScreen(GxEPD_BLACK);
-  display.setFont(&FreeMonoBold9pt7b);
-  display.setTextColor(GxEPD_WHITE);
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  display.setFont(&FreeMonoBold8pt7b);
+  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  display.setCursor(50, 10);
   display.println("Calendar");
+  // display a full month on a calendar 
+  display.setCursor(x, 30);
+  display.println("Su Mo Tu We Th Fr Sa");
+
+  // display this month
+  RTC.read(currentTime);
+  
+  //
+  // get number of days in month
+  if (currentTime.Month == 1 || currentTime.Month == 3 || currentTime.Month == 5 || currentTime.Month == 7 || currentTime.Month == 8 || currentTime.Month == 10 || currentTime.Month == 12){
+    monthLength = 31;
+  } else if(currentTime.Month== 2){
+    monthLength = 28;
+  } else {
+    monthLength = 30;
+  }
+  
+  startDay = startDayOfWeek(currentTime.Year, currentTime.Month,1); // Sunday's value is 0
+  // now build first week string
+  switch (startDay){
+    case 0:
+      // Sunday
+      week1 = " 1  2  3  4  5  6  7";
+      break;
+    case 1:
+      // Monday
+      week1 = "    1  2  3  4  5  6";
+      break;      
+     case 2:
+      // Tuesday
+      week1 = "       1  2  3  4  5";
+      break;           
+     case 3:
+      // Wednesday
+      week1 = "          1  2  3  4";
+      break;  
+     case 4:
+      // Thursday
+      week1 = "             1  2  3";
+      break; 
+     case 5:
+      // Friday
+      if(monthLength == 28 || monthLength == 30){week1 = "                1  2";}      
+      if(monthLength == 31){week1 = "31              1  2";}      
+      break; 
+     case 6:
+      // Saturday
+      if(monthLength == 28){week1 = "                   1";}
+      if(monthLength == 30){week1 = "30                 1";}      
+      if(monthLength == 31){week1 = "30 31              1";}       
+      
+      break;           
+  } // end first week
+  newWeekStart = (7-startDay)+1;
+  const char* newWeek1 = (const char*) week1.c_str();  
+  display.setCursor(x, 50);
+  display.println(newWeek1);
+  // display week 2
+  week2 ="";
+  for (int f = newWeekStart; f < newWeekStart + 7; f++){
+    if(f<10){
+      week2 = week2 +  " " + String(f) + " ";
+    }  
+    else{week2 = week2 + String(f) + " ";}    
+  }
+  const char* newWeek2 = (const char*) week2.c_str();
+  display.setCursor(x, 70);
+  display.println(newWeek2);  
+  // display week 3
+  newWeekStart = (14-startDay)+1; 
+  week3 ="";
+  for (int f = newWeekStart; f < newWeekStart + 7; f++){
+    if(f<10){
+      week3 = week3 +  " " + String(f) + " ";
+    }  
+    else{week3 = week3 + String(f) + " ";}    
+  }
+  const char* newWeek3 = (const char*) week3.c_str(); 
+  display.setCursor(x, 90);
+  display.println(newWeek3);    
+  // display week 4
+  newWeekStart = (21-startDay)+1; 
+  week4 ="";
+  for (int f = newWeekStart; f < newWeekStart + 7; f++){
+    if(f<10){
+      week4 = week4 +  " " + String(f) + " ";
+    }  
+    else{week4 = week4 + String(f) + " ";}    
+  }
+  const char* newWeek4 = (const char*) week4.c_str();  
+  display.setCursor(x, 110);
+  display.println(newWeek4);
+
+  // do we need a fifth week
+  week5="";
+  newWeekStart = (28-startDay)+1;   
+  // is is February?
+  if(newWeekStart > 28 && currentTime.Month == 2){
+  // do nothing unless its a leap year
+    if (currentTime.Year==(currentTime.Year/4)*4){ // its a leap year
+      week5 = "29";
+    }       
+  }
+  else{ // print up to 30 anyway
+    if(currentTime.Month == 2){  // its February
+      for (int f = newWeekStart; f < 29; f++){
+        week5 = week5 + String(f) + " ";  
+      }  
+      // is it a leap year
+      if (currentTime.Year==(currentTime.Year/4)*4){ // its a leap year
+        week5 = week5 + "29";
+      }        
+    }
+    else{
+      for (int f = newWeekStart; f < 31; f++){
+        week5 = week5 + String(f) + " ";
+      }
+      // are there 31 days
+      if (monthLength == 31 && week5.length() <7){
+        week5 = week5 + "31"; 
+      } 
+    } 
+  }
+  const char* newWeek5 = (const char*) week5.c_str();  
+  display.setCursor(x, 130);
+  display.println(newWeek5);
   display.display();
   guiState = CALENDAR_STATE;
 }
@@ -1076,3 +1225,9 @@ bool Watchy::syncNTP(long gmt, String ntpServer) {
   RTC.set(tm);
   return true;
 }
+
+int Watchy::startDayOfWeek(int y, int m, int d){
+  static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+  y -= m < 3;
+  return (y +y/4 -y/100 + y/400 + t[m-1] + d)% 7; 
+} 

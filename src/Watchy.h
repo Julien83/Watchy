@@ -10,6 +10,7 @@
 #include <GxEPD2_BW.h>
 #include <Wire.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
+#include <Fonts/FreeMonoBold8pt7b.h>
 #include "DSEG7_Classic_Bold_53.h"
 #include "Display.h"
 #include "WatchyRTC.h"
@@ -87,6 +88,7 @@ private:
                                 uint16_t len);
   static uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data,
                                  uint16_t len);
+  int startDayOfWeek(int y, int m, int d);
 };
 
 extern RTC_DATA_ATTR int guiState;
