@@ -507,10 +507,12 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
     }
     else{
       for (int f = newWeekStart; f < 31; f++){
-        week5 = week5 + String(f) + " ";
+        if (week5.length() < 19){
+          week5 = week5 + String(f) + " ";
+        }
       }
       // are there 31 days
-      if (monthLength == 31 && week5.length() <7){
+      if (monthLength == 31 && week5.length() < 19){
         week5 = week5 + "31"; 
       } 
     } 
@@ -519,13 +521,12 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   y+=20;
   display.setCursor(x, y);
   display.println(newWeek5);
- /* if(week6 != null){
+  if(week6 != null){
     const char* newWeek6 = (const char*) week6.c_str();
     y+=20;
     display.setCursor(x, y);
     display.println(newWeek6);
-  }*/
-
+  }
 
   display.display();
   guiState = CALENDAR_STATE;
