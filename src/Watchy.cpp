@@ -399,27 +399,27 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   startDay = startDayOfWeek(tmYearToCalendar(calendarTime.Year), calendarTime.Month,1); // Sunday's value is 0
   // now build first week string
   switch (startDay){
-    case 1:
+    case 0:
       // Monday
       week1 = " 1  2  3  4  5  6  7";
       break;
-    case 2:
+    case 1:
       // Tuesday
       week1 = "    1  2  3  4  5  6";
       break;      
-     case 3:
+     case 2:
       // Wednesday
       week1 = "       1  2  3  4  5";
       break;           
-     case 4:
+     case 3:
       // Thursday
       week1 = "          1  2  3  4";
       break;  
-     case 5:
+     case 4:
       // Friday
       week1 = "             1  2  3";
       break; 
-     case 6:
+     case 5:
       // Saturday
       if(monthLength == 28 || monthLength == 30){week1 = "                1  2";}      
       if(monthLength == 31){
@@ -427,7 +427,7 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
         week6 = "31                  ";
         }      
       break; 
-     case 0:
+     case 6:
       // Sunday
       if(monthLength == 28){week1 = "                   1";}
       if(monthLength == 30){
@@ -1303,7 +1303,8 @@ bool Watchy::syncNTP(long gmt, String ntpServer) {
 }
 
 int Watchy::startDayOfWeek(int y, int m, int d){
-  static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+  //static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    static int t[] = {6, 2, 1, 4, 6, 2, 4, 6, 3, 5, 1, 3};
   y -= m < 3;
   return (y +y/4 -y/100 + y/400 + t[m-1] + d)% 7; 
 } 
