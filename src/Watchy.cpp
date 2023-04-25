@@ -353,31 +353,38 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   String week4 ="";
   String week5 ="";
   String week6 ="";
+  String monthYear ="";
   int newWeekStart = 0; // used to show start of next week of the month
   char monthString2[37]= {"JanFebMarAprMayJunJulAugSepOctNovDec"};
   int  monthIndex2[122] ={0,3,6,9,12,15,18,21,24,27,30,33};
   char monthName2[3]="";
   int16_t x = 5;
   int16_t y = 10;
+  int16_t x1, y1;
+  uint16_t w, h;
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
   display.setFont(&FreeMonoBold8pt7b);
   display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
-  display.setCursor(50, y);
+  //Centre calendar word
+  display.getTextBounds("Calendar",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
   display.println("Calendar");
 
   //Display Month an year of calendar
   y+=20;
-  display.setCursor(x, y);
-  display.print(monthStr(calendarTime.Month));
-  display.print(" ");
-  display.print(tmYearToCalendar(calendarTime.Year));
-
+  monthYear = monthStr(calendarTime.Month) + String(" ") + String(tmYearToCalendar(calendarTime.Year));
+  display.getTextBounds(monthYear,x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println(monthYear);
+  
   // display a full month on a calendar 
   y+=20;
-  display.setCursor(x, y);
-  display.println("Su Mo Tu We Th Fr Sa");
+  //Centre calendar word
+  display.getTextBounds("Mo Tu We Th Fr Sa Su",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("Mo Tu We Th Fr Sa Su");
 
   //
   // get number of days in month
@@ -512,12 +519,12 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   y+=20;
   display.setCursor(x, y);
   display.println(newWeek5);
-  if(week6 != null){
+ /* if(week6 != null){
     const char* newWeek6 = (const char*) week6.c_str();
     y+=20;
     display.setCursor(x, y);
     display.println(newWeek6);
-  }
+  }*/
 
 
   display.display();
