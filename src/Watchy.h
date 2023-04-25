@@ -10,7 +10,7 @@
 #include <GxEPD2_BW.h>
 #include <Wire.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold8pt7b.h>
+#include "FreeMonoBold8pt7b.h"
 #include "DSEG7_Classic_Bold_53.h"
 #include "Display.h"
 #include "WatchyRTC.h"
@@ -58,7 +58,7 @@ public:
   void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
 
   virtual void handleButtonPress();
-  void showCalendar();
+  void showCalendar(tmElements_t calendarTime);
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
   void showAbout();
