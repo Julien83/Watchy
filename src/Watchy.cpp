@@ -71,7 +71,7 @@ void Watchy::init(String datetime) {
     RTC.read(currentTime);
     RTC.read(bootTime);
     showWatchFace(false); // full update on reset
-    vibMotor(75, 4);
+    vibMotor(75, 10);
     break;
   }
   deepSleep();
@@ -111,7 +111,7 @@ void Watchy::handleButtonPress() {
   if (wakeupBit & MENU_BTN_MASK) {
     if (guiState ==
         WATCHFACE_STATE) { // enter menu state if coming from watch face
-      showMenu(menuIndex, false);
+      showMenu(menuIndex, true);
     } else if (guiState ==
                MAIN_MENU_STATE) { // if already in menu, then select menu item
       switch (menuIndex) {
@@ -149,11 +149,11 @@ void Watchy::handleButtonPress() {
   else if (wakeupBit & BACK_BTN_MASK) {
     if (guiState == MAIN_MENU_STATE) { // exit to watch face if already in menu
       RTC.read(currentTime);
-      showWatchFace(false);
+      showWatchFace(true);
     } else if (guiState == APP_STATE) {
-      showMenu(menuIndex, false); // exit to menu if already in app
+      showMenu(menuIndex, true); // exit to menu if already in app
     } else if (guiState == FW_UPDATE_STATE) {
-      showMenu(menuIndex, false); // exit to menu if already in app
+      showMenu(menuIndex, true); // exit to menu if already in app
     } else if (guiState == WATCHFACE_STATE) {
       // display this month
       RTC.read(CalendarTime);
@@ -161,7 +161,7 @@ void Watchy::handleButtonPress() {
       return;
     }else if (guiState == CALENDAR_STATE) {
       RTC.read(currentTime);
-      showWatchFace(false);
+      showWatchFace(true);
       return;
     }
 
@@ -528,7 +528,7 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
     display.println(newWeek6);
   }
 
-  display.display();
+  display.display(true);
   guiState = CALENDAR_STATE;
 }
 
@@ -599,11 +599,11 @@ void Watchy::showAbout() {
   display.print(minutes);
   display.println("m");   
 
-  display.print("CPU Temp: ");
-  display.print(minutes);
-  display.println("C");  
+  display.print("Free Heap: ");
+  display.print(ESP.getFreeHeap());
+  display.println("Bytes");  
 
-  display.display(false); // full refresh
+  display.display(true); // full refresh
 
   guiState = APP_STATE;
 }
@@ -615,7 +615,7 @@ void Watchy::showBuzz() {
   display.setTextColor(GxEPD_WHITE);
   display.setCursor(70, 80);
   display.println("Buzz!");
-  display.display(false); // full refresh
+  display.display(true); // full refresh
   vibMotor();
   showMenu(menuIndex, false);
 }
@@ -1084,7 +1084,7 @@ void Watchy::setupWifi() {
 		display.println(WiFi.localIP());
     weatherIntervalCounter = -1; // Reset to force weather to be read again
   }
-  display.display(false); // full refresh
+  display.display(true); // full refresh
   // turn off radios
   WiFi.mode(WIFI_OFF);
   btStop();
@@ -1106,12 +1106,12 @@ void Watchy::_configModeCallback(WiFiManager *myWiFiManager) {
   display.println(WiFi.softAPIP());
 	display.println("MAC address:");
 	display.println(WiFi.softAPmacAddress().c_str());
-  display.display(false); // full refresh
+  display.display(true); // full refresh
 }
 
 bool Watchy::connectWiFi() {
   if (WL_CONNECT_FAILED ==
-      WiFi.begin()) { // WiFi not setup, you can also use hard coded credentials
+      WiFi.begin("JJ_WIFI","lunadebelair")) { // WiFi not setup, you can also use hard coded credentials
                       // with WiFi.begin(SSID,PASS);
     WIFI_CONFIGURED = false;
   } else {
@@ -1143,7 +1143,7 @@ void Watchy::showUpdateFW() {
   display.println("again when ready");
   display.println(" ");
   display.println("Keep USB powered");
-  display.display(false); // full refresh
+  display.display(true); // full refresh
 
   guiState = FW_UPDATE_STATE;
 }
@@ -1160,7 +1160,7 @@ void Watchy::updateFWBegin() {
   display.println(" ");
   display.println("Waiting for");
   display.println("connection...");
-  display.display(false); // full refresh
+  display.display(true); // full refresh
 
   BLE BT;
   BT.begin("Watchy BLE OTA");
@@ -1180,7 +1180,7 @@ void Watchy::updateFWBegin() {
         display.println(" ");
         display.println("Waiting for");
         display.println("upload...");
-        display.display(false); // full refresh
+        display.display(true); // full refresh
       }
       if (currentStatus == 1) {
         display.setFullWindow();
@@ -1205,7 +1205,7 @@ void Watchy::updateFWBegin() {
         display.println("completed!");
         display.println(" ");
         display.println("Rebooting...");
-        display.display(false); // full refresh
+        display.display(true); // full refresh
 
         delay(2000);
         esp_restart();
@@ -1219,7 +1219,7 @@ void Watchy::updateFWBegin() {
         display.println("BLE Disconnected!");
         display.println(" ");
         display.println("exiting...");
-        display.display(false); // full refresh
+        display.display(true); // full refresh
         delay(1000);
         break;
       }
@@ -1243,7 +1243,7 @@ void Watchy::showSyncNTP() {
   display.println("Syncing NTP... ");
   display.print("GMT offset: ");
   display.println(gmtOffset);
-  display.display(false); // full refresh
+  display.display(true); // full refresh
   if (connectWiFi()) {
     if (syncNTP()) {
       display.println("NTP Sync Success\n");
