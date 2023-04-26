@@ -56,6 +56,8 @@ public:
   static void displayBusyCallback(const void *);
   float getBatteryVoltage();
   void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
+  u_int16_t getTextColor();
+  u_int16_t getBackColor();
 
   virtual void handleButtonPress();
   void showCalendar(tmElements_t calendarTime);

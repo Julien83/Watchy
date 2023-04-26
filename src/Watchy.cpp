@@ -421,23 +421,19 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
       break; 
      case 5:
       // Saturday
-      if(monthLength == 28 || monthLength == 30){week1 = "                1  2";}      
+      week1 = "                1  2";     
       if(monthLength == 31){
-        week1 = "                1  2";
         week6 = "31                  ";
-        }      
+      }      
       break; 
      case 6:
       // Sunday
-      if(monthLength == 28){week1 = "                   1";}
+      week1 = "                   1";
       if(monthLength == 30){
-        week1 = "                   1";
         week6 = "30                  ";
-        }      
-      if(monthLength == 31){
-        week1 = "                   1";
+      } else if(monthLength == 31){
         week6 = "30 31               ";
-        }       
+      }       
       
       break;           
   } // end first week
@@ -1110,8 +1106,32 @@ void Watchy::_configModeCallback(WiFiManager *myWiFiManager) {
 }
 
 bool Watchy::connectWiFi() {
+ 
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+  int n = WiFi.scanNetworks();
+  Serial.println("scan done");
+  if (n == 0) {
+      Serial.println("no networks found");
+  } else {
+    Serial.print(n);
+    Serial.println(" networks found");
+    for (int i = 0; i < n; ++i) {
+      // Print SSID and RSSI for each network found
+      Serial.print(i + 1);
+      Serial.print(": ");
+      Serial.print(WiFi.SSID(i));
+      Serial.print(" (");
+      Serial.print(WiFi.RSSI(i));
+      Serial.print(")");
+      Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+      delay(10);
+    }
+  }
+
   if (WL_CONNECT_FAILED ==
-      WiFi.begin("JJ_WIFI","lunadebelair")) { // WiFi not setup, you can also use hard coded credentials
+      WiFi.begin("AP_TEST","1234test")) { // WiFi not setup, you can also use hard coded credentials
                       // with WiFi.begin(SSID,PASS);
     WIFI_CONFIGURED = false;
   } else {
@@ -1309,3 +1329,14 @@ int Watchy::startDayOfWeek(int y, int m, int d){
   y -= m < 3;
   return (y +y/4 -y/100 + y/400 + t[m-1] + d)% 7; 
 } 
+
+u_int16_t Watchy::getTextColor()
+{
+  return (DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+}
+
+u_int16_t Watchy::getBackColor()
+{
+  return (DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+}
+
