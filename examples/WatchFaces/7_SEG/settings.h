@@ -19,7 +19,7 @@
 #define WIFI_STA_PWD_2          "lunadebelair"
 #define WIFI_STA_SSID_3         "SFR_E9F8"
 #define WIFI_STA_PWD_3          "lunadebelair"
-#define WIFI_NB                 3
+
 
 
 watchySettings settings{
