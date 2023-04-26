@@ -34,13 +34,20 @@ typedef struct watchySettings {
   String weatherUnit;
   String weatherLang;
   int8_t weatherUpdateInterval;
+  bool useInternalTemperature;
   // NTP Settings
   String ntpServer;
   int gmtOffset;
   //Vibrate Settings
   bool vibrateOClock;
   bool vibrateHalfOClock;
+
+  String ssid[3];
+  String pwd[3];
+
 } watchySettings;
+
+
 
 class Watchy {
 public:
@@ -48,6 +55,7 @@ public:
   static GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> display;
   tmElements_t currentTime;
   watchySettings settings;
+  
 
 public:
   explicit Watchy(const watchySettings &s) : settings(s) {} // constructor
@@ -76,7 +84,8 @@ public:
   bool connectWiFi();
   weatherData getWeatherData();
   weatherData getWeatherData(String cityID, String units, String lang,
-                             String url, String apiKey, uint8_t updateInterval);
+                             String url, String apiKey, uint8_t updateInterval,
+                             bool useInternalTemperature);
   void updateFWBegin();
 
   void showWatchFace(bool partialRefresh);

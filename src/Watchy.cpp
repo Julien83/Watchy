@@ -18,6 +18,7 @@ RTC_DATA_ATTR tmElements_t bootTime;
 RTC_DATA_ATTR tmElements_t CalendarTime;
 
 
+
 void Watchy::init(String datetime) {
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause(); // get wake up reason
@@ -878,12 +879,14 @@ void Watchy::drawWatchFace() {
 weatherData Watchy::getWeatherData() {
   return getWeatherData(settings.cityID, settings.weatherUnit,
                         settings.weatherLang, settings.weatherURL,
-                        settings.weatherAPIKey, settings.weatherUpdateInterval);
+                        settings.weatherAPIKey, settings.weatherUpdateInterval,
+                        settings.useInternalTemperature);
 }
 
 weatherData Watchy::getWeatherData(String cityID, String units, String lang,
                                    String url, String apiKey,
-                                   uint8_t updateInterval) {
+                                   uint8_t updateInterval,
+                                  bool useInternalTemperature) {
   currentWeather.isMetric = units == String("metric");
   if (weatherIntervalCounter < 0) { //-1 on first run, set to updateInterval
     weatherIntervalCounter = updateInterval;
@@ -918,7 +921,7 @@ weatherData Watchy::getWeatherData(String cityID, String units, String lang,
       // turn off radios
       WiFi.mode(WIFI_OFF);
       btStop();
-    } else { // No WiFi, use internal temperature sensor
+    } else if(useInternalTemperature){ // No WiFi, use internal temperature sensor
       uint8_t temperature = sensor.readTemperature(); // celsius
       if (!currentWeather.isMetric) {
         temperature = temperature * 9. / 5. + 32.; // fahrenheit
@@ -1129,9 +1132,9 @@ bool Watchy::connectWiFi() {
       delay(10);
     }
   }
-
+  
   if (WL_CONNECT_FAILED ==
-      WiFi.begin("AP_TEST","1234test")) { // WiFi not setup, you can also use hard coded credentials
+      WiFi.begin(settings.ssid[0].c_str(),settings.pwd[0].c_str())) { // WiFi not setup, you can also use hard coded credentials
                       // with WiFi.begin(SSID,PASS);
     WIFI_CONFIGURED = false;
   } else {
