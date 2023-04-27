@@ -45,6 +45,9 @@ typedef struct watchySettings {
   String ssid[WIFI_STA_NB];
   String pwd[WIFI_STA_NB];
 
+  String todoistToken;
+  String todoistUrl;
+
 } watchySettings;
 
 

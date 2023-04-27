@@ -3,6 +3,12 @@
 
 //https://api.todoist.com/rest/v2/projects?token=3d95d801351220fb297643a380aeb4c69bf328c2
 
+//Todoist Settings
+#define TODOIST_TOKEN           "3d95d801351220fb297643a380aeb4c69bf328c2"
+#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks/?token="
+
+
+
 //Weather Settings
 #define CITY_ID                 "2983732" //Rians 83560 https://openweathermap.org/current#cityid
 #define OPENWEATHERMAP_APIKEY   "f058fe1cad2afe8e2ddc5d063a64cecb" //use your own API key :)
@@ -40,6 +46,8 @@ watchySettings settings{
     .vibrateHalfOClock = true,
     .ssid = {WIFI_STA_SSID_1,WIFI_STA_SSID_2,WIFI_STA_SSID_3,WIFI_STA_SSID_4},
     .pwd = {WIFI_STA_PWD_1,WIFI_STA_PWD_2,WIFI_STA_PWD_3,WIFI_STA_SSID_4},
+    .todoistToken = TODOIST_TOKEN,
+    .todoistUrl = TODOIST_URL,
 };
 
 #endif

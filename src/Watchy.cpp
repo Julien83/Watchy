@@ -283,7 +283,42 @@ void Watchy::showTodoist() {
   //Centre calendar word
   display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  y+=20;
   display.println("ToDoist");
+  display.display(true);
+
+  if (connectWiFi()) {
+      HTTPClient http; // Use Todoist API for live data if WiFi is connected
+      http.setConnectTimeout(3000); // 3 second max timeout
+      String todoistQueryURL = settings.todoistUrl + settings.todoistToken + "&project_id=2151759266";
+
+      http.begin(todoistQueryURL.c_str());
+      int httpResponseCode = http.GET();
+      if (httpResponseCode == 200) 
+      {
+        String payload             = http.getString();
+        JSONVar responseObject     = JSON.parse(payload);
+        String task = responseObject["content"];
+        // diplay task
+        display.setCursor(x, y);
+        y+=20;
+        display.println(task);
+       
+      } 
+      else 
+      {
+        // http error
+        display.getTextBounds("Http error",x,y,&x1,&y1,&w,&h);
+        display.setCursor((DISPLAY_WIDTH-w)/2, y);
+        y+=20;
+        display.println("Http error");
+      }
+      http.end();
+      // turn off radios
+      WiFi.mode(WIFI_OFF);
+      btStop();
+  }
+
   display.display(true);
   guiState = TODOIST_STATE;
 }
