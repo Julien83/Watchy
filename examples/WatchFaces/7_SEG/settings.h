@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+//https://api.todoist.com/rest/v2/projects?token=3d95d801351220fb297643a380aeb4c69bf328c2
+
 //Weather Settings
 #define CITY_ID                 "2983732" //Rians 83560 https://openweathermap.org/current#cityid
 #define OPENWEATHERMAP_APIKEY   "f058fe1cad2afe8e2ddc5d063a64cecb" //use your own API key :)
