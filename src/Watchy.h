@@ -69,6 +69,7 @@ public:
 
   virtual void handleButtonPress();
   void showCalendar(tmElements_t calendarTime);
+  void showTodoist();
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
   void showAbout();

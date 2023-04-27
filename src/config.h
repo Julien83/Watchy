@@ -54,12 +54,16 @@
 // wifi
 #define WIFI_AP_TIMEOUT 60
 #define WIFI_AP_SSID    "Watchy AP"
+#define WIFI_STA_NB     3
+
 // menu
 #define WATCHFACE_STATE -1
 #define MAIN_MENU_STATE 0
 #define APP_STATE       1
 #define FW_UPDATE_STATE 2
 #define CALENDAR_STATE  3
+#define TODOIST_STATE   4
+
 #define MENU_HEIGHT     25
 #define MENU_LENGTH     7
 // set time

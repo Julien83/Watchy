@@ -160,7 +160,7 @@ void Watchy::handleButtonPress() {
       RTC.read(CalendarTime);
       showCalendar(CalendarTime);
       return;
-    }else if (guiState == CALENDAR_STATE) {
+    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)) {
       RTC.read(currentTime);
       showWatchFace(true);
       return;
@@ -177,6 +177,7 @@ void Watchy::handleButtonPress() {
       }
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
+      showTodoist();
       return;
     } else if (guiState == CALENDAR_STATE) {
       // display last month
@@ -232,83 +233,6 @@ void Watchy::handleButtonPress() {
       return;
     }
   }
-
-  /***************** fast menu *****************/
-  /*bool timeout     = false;
-  long lastTimeout = millis();
-  pinMode(MENU_BTN_PIN, INPUT);
-  pinMode(BACK_BTN_PIN, INPUT);
-  pinMode(UP_BTN_PIN, INPUT);
-  pinMode(DOWN_BTN_PIN, INPUT);
-  while (!timeout) {
-    if (millis() - lastTimeout > 5000) {
-      timeout = true;
-    } else {
-      if (digitalRead(MENU_BTN_PIN) == 1) {
-        lastTimeout = millis();
-        if (guiState ==
-            MAIN_MENU_STATE) { // if already in menu, then select menu item
-          switch (menuIndex) {
-          case 0:
-            showAbout();
-            break;
-          case 1:
-            showBuzz();
-            break;
-          case 2:
-            showAccelerometer();
-            break;
-          case 3:
-            setTime();
-            break;
-          case 4:
-            setupWifi();
-            break;
-          case 5:
-            showUpdateFW();
-            break;
-          case 6:
-            showSyncNTP();
-            break;
-          default:
-            break;
-          }
-        } else if (guiState == FW_UPDATE_STATE) {
-          updateFWBegin();
-        }
-      } else if (digitalRead(BACK_BTN_PIN) == 1) {
-        lastTimeout = millis();
-        if (guiState ==
-            MAIN_MENU_STATE) { // exit to watch face if already in menu
-          RTC.read(currentTime);
-          showWatchFace(false);
-          break; // leave loop
-        } else if (guiState == APP_STATE) {
-          showMenu(menuIndex, false); // exit to menu if already in app
-        } else if (guiState == FW_UPDATE_STATE) {
-          showMenu(menuIndex, false); // exit to menu if already in app
-        }
-      } else if (digitalRead(UP_BTN_PIN) == 1) {
-        lastTimeout = millis();
-        if (guiState == MAIN_MENU_STATE) { // increment menu index
-          menuIndex--;
-          if (menuIndex < 0) {
-            menuIndex = MENU_LENGTH - 1;
-          }
-          showFastMenu(menuIndex);
-        }
-      } else if (digitalRead(DOWN_BTN_PIN) == 1) {
-        lastTimeout = millis();
-        if (guiState == MAIN_MENU_STATE) { // decrement menu index
-          menuIndex++;
-          if (menuIndex > MENU_LENGTH - 1) {
-            menuIndex = 0;
-          }
-          showFastMenu(menuIndex);
-        }
-      }
-    }
-  }*/
 }
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
@@ -343,6 +267,27 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
   guiState = MAIN_MENU_STATE;
   alreadyInMenu = false;
 }
+
+
+void Watchy::showTodoist() {
+
+  int16_t x = 5;
+  int16_t y = 10;
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  display.setFullWindow();
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  display.setFont(&FreeMonoBold8pt7b);
+  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  //Centre calendar word
+  display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("ToDoist");
+  display.display(true);
+  guiState = TODOIST_STATE;
+}
+
 
 void Watchy::showCalendar(tmElements_t calendarTime) {
 
@@ -598,7 +543,7 @@ void Watchy::showAbout() {
 
   display.print("Free Heap: ");
   display.print(ESP.getFreeHeap());
-  display.println("Bytes");  
+    
 
   display.display(true); // full refresh
 
@@ -1109,45 +1054,100 @@ void Watchy::_configModeCallback(WiFiManager *myWiFiManager) {
 }
 
 bool Watchy::connectWiFi() {
- 
+
+  String localSsid="";
+  String localPwd="OPEN";
+  int staFound = false;
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   delay(100);
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
-  if (n == 0) {
+  if (n == 0) 
+  {
       Serial.println("no networks found");
-  } else {
+  } 
+  else 
+  {
     Serial.print(n);
     Serial.println(" networks found");
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) 
+    {
       // Print SSID and RSSI for each network found
       Serial.print(i + 1);
       Serial.print(": ");
-      Serial.print(WiFi.SSID(i));
+      Serial.print(WiFi.SSID(i).c_str());
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
       Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+      if(WiFi.encryptionType(i) == WIFI_AUTH_OPEN)
+      {
+        localSsid = WiFi.SSID(i);
+        staFound = true;
+        Serial.println("networks free open : "+ WiFi.SSID(i));
+      }
+      else
+      {
+        for (int j=0; j < WIFI_STA_NB; j++)
+        {
+          Serial.println("Compar "+ WiFi.SSID(i) + " & "+ settings.ssid[j].c_str());
+          //if(settings.ssid[j].c_str()== WiFi.SSID(i).c_str())
+          if(WiFi.SSID(i).compareTo(settings.ssid[j]) == 0)
+          {
+            localSsid = WiFi.SSID(i);
+            localPwd = settings.pwd[j];
+            staFound = true;
+            Serial.println("networks Match found : "+ WiFi.SSID(i));
+          }
+        }
+      }
+      if(staFound == true)
+      {
+        int ret;
+        staFound = false;
+        if(WiFi.encryptionType(i) == WIFI_AUTH_OPEN)
+        {
+          ret = WiFi.begin(localSsid.c_str());
+        }
+        else
+        {
+          ret = WiFi.begin(localSsid.c_str(),localPwd.c_str());
+        }
+        
+
+        if (ret == WL_CONNECT_FAILED) 
+        { 
+          WIFI_CONFIGURED = false;
+          Serial.println("WL_CONNECT_FAILED");
+        } 
+        else 
+        {
+          if (WL_CONNECTED ==
+              WiFi.waitForConnectResult()) { // attempt to connect for 10s
+            WIFI_CONFIGURED = true;
+            //i=n for ext from the for
+            i = n;
+          } else { // connection failed, time out
+            WIFI_CONFIGURED = false;
+            // turn off radios
+            WiFi.mode(WIFI_OFF);
+            btStop();
+            Serial.println("WL_CONNECT_TIMEOUT");
+            Serial.println(ret);
+            
+            return WIFI_CONFIGURED;
+          }
+        }
+      }
+      else
+      {
+        WIFI_CONFIGURED = false;
+      }
       delay(10);
     }
   }
   
-  if (WL_CONNECT_FAILED ==
-      WiFi.begin(settings.ssid[0].c_str(),settings.pwd[0].c_str())) { // WiFi not setup, you can also use hard coded credentials
-                      // with WiFi.begin(SSID,PASS);
-    WIFI_CONFIGURED = false;
-  } else {
-    if (WL_CONNECTED ==
-        WiFi.waitForConnectResult()) { // attempt to connect for 10s
-      WIFI_CONFIGURED = true;
-    } else { // connection failed, time out
-      WIFI_CONFIGURED = false;
-      // turn off radios
-      WiFi.mode(WIFI_OFF);
-      btStop();
-    }
-  }
   return WIFI_CONFIGURED;
 }
 
