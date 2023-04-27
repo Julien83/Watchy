@@ -42,8 +42,8 @@ typedef struct watchySettings {
   bool vibrateOClock;
   bool vibrateHalfOClock;
 
-  String ssid[3];
-  String pwd[3];
+  String ssid[WIFI_STA_NB];
+  String pwd[WIFI_STA_NB];
 
 } watchySettings;
 

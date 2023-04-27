@@ -54,7 +54,7 @@
 // wifi
 #define WIFI_AP_TIMEOUT 60
 #define WIFI_AP_SSID    "Watchy AP"
-#define WIFI_STA_NB     3
+#define WIFI_STA_NB     4
 
 // menu
 #define WATCHFACE_STATE -1
