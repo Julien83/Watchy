@@ -5,7 +5,7 @@
 
 //Todoist Settings
 #define TODOIST_TOKEN           "3d95d801351220fb297643a380aeb4c69bf328c2"
-#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks/?token="
+#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks/?project_id=2151759266"
 
 
 
@@ -27,7 +27,7 @@
 #define WIFI_STA_PWD_2          "lunadebelair"
 #define WIFI_STA_SSID_3         "SFR_E9F8"
 #define WIFI_STA_PWD_3          "lunadebelair"
-#define WIFI_STA_SSID_4         "ATA_WIFI_INTERNE"
+#define WIFI_STA_SSID_4         "?ATA_WIFI_INTERNE"
 #define WIFI_STA_PWD_4          "ATA-WIFIinterne-2015"
 
 

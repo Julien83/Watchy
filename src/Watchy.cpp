@@ -283,40 +283,58 @@ void Watchy::showTodoist() {
   //Centre calendar word
   display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
-  y+=20;
   display.println("ToDoist");
   display.display(true);
 
   if (connectWiFi()) {
       HTTPClient http; // Use Todoist API for live data if WiFi is connected
       http.setConnectTimeout(3000); // 3 second max timeout
-      String todoistQueryURL = settings.todoistUrl + settings.todoistToken + "&project_id=2151759266";
+      String todoistQueryURL = settings.todoistUrl;
+      //display.setCursor(0,y+=20);
+      //display.println(todoistQueryURL);
 
       http.begin(todoistQueryURL.c_str());
+      http.addHeader("Authorization",("Bearer "+ settings.todoistToken));
       int httpResponseCode = http.GET();
+      //display.setCursor(0,y+=120);
+      //display.println(httpResponseCode);
+
       if (httpResponseCode == 200) 
       {
         String payload             = http.getString();
+        //display.setCursor(0,y+=20);
+        //display.println(payload);
+
         JSONVar responseObject     = JSON.parse(payload);
         String task = responseObject["content"];
+        
         // diplay task
-        display.setCursor(x, y);
-        y+=20;
-        display.println(task);
+        display.setCursor(x, y+=20);
+        display.print("JSON Size: ");
+        display.println(responseObject.length());
+        display.setCursor(x, y+=20);
+        display.print("JSON Keys: ");
+        display.println(responseObject.keys());
        
       } 
       else 
       {
         // http error
         display.getTextBounds("Http error",x,y,&x1,&y1,&w,&h);
-        display.setCursor((DISPLAY_WIDTH-w)/2, y);
-        y+=20;
+        display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
         display.println("Http error");
       }
       http.end();
       // turn off radios
       WiFi.mode(WIFI_OFF);
       btStop();
+  }
+  else
+  {
+    display.getTextBounds("WiFi No Found",x,y,&x1,&y1,&w,&h);
+    display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
+    y+=20;
+    display.println("WiFi No Found");
   }
 
   display.display(true);
