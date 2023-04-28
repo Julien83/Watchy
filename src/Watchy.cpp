@@ -302,20 +302,18 @@ void Watchy::showTodoist() {
       if (httpResponseCode == 200) 
       {
         String payload             = http.getString();
-        //display.setCursor(0,y+=20);
-        //display.println(payload);
-
         JSONVar responseObject     = JSON.parse(payload);
-        String task = responseObject["content"];
-        
-        // diplay task
-        display.setCursor(x, y+=20);
-        display.print("JSON Size: ");
-        display.println(responseObject.length());
-        display.setCursor(x, y+=20);
-        display.print("JSON Keys: ");
-        display.println(responseObject.keys());
-       
+
+        int nbTask = responseObject.length();
+        //Display task
+        for(int index=0;index<nbTask ; index++)
+        {
+          display.setCursor(0, y+=20);
+          String task = responseObject[index]["content"];
+          task = task.substring(0,22);
+          display.println(task);
+        }
+   
       } 
       else 
       {
