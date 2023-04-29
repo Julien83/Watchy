@@ -318,9 +318,10 @@ void Watchy::showTodoist() {
       else 
       {
         // http error
-        display.getTextBounds("Http error",x,y,&x1,&y1,&w,&h);
-        display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
-        display.println("Http error");
+        display.getTextBounds("Http error    ",x,y,&x1,&y1,&w,&h);
+        display.setCursor((DISPLAY_WIDTH-w)/2, y+=60);
+        display.print("Http error ");
+        display.println(httpResponseCode);
       }
       http.end();
       // turn off radios

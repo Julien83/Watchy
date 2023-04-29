@@ -5,7 +5,8 @@
 
 //Todoist Settings
 #define TODOIST_TOKEN           "3d95d801351220fb297643a380aeb4c69bf328c2"
-#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks/?project_id=2151759266"
+//#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks/?project_id=2151759266"
+#define TODOIST_URL             "https://api.todoist.com/rest/v2/tasks?filter=today"
 
 
 
