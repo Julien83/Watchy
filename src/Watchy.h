@@ -17,6 +17,8 @@
 #include "BLE.h"
 #include "bma.h"
 #include "config.h"
+#include "Picture.h"
+
 
 typedef struct weatherData {
   int8_t temperature;
@@ -50,6 +52,14 @@ typedef struct watchySettings {
 
 } watchySettings;
 
+typedef struct todoistData {
+
+  String todoistTask[TODOIST_TASK_MAX];
+  String todoistId[TODOIST_TASK_MAX];
+
+} todoistData;
+
+
 
 
 class Watchy {
@@ -72,7 +82,9 @@ public:
 
   virtual void handleButtonPress();
   void showCalendar(tmElements_t calendarTime);
+  void showCalendarOLD(tmElements_t calendarTime);
   void showTodoist();
+  void getTodoistData(); 
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
   void showAbout();
@@ -104,6 +116,7 @@ private:
   static uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data,
                                  uint16_t len);
   int startDayOfWeek(int y, int m, int d);
+  String dayToString(int _day);
 };
 
 extern RTC_DATA_ATTR int guiState;

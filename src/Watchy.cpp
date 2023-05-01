@@ -16,6 +16,7 @@ RTC_DATA_ATTR long gmtOffset = 0;
 RTC_DATA_ATTR bool alreadyInMenu         = true;
 RTC_DATA_ATTR tmElements_t bootTime;
 RTC_DATA_ATTR tmElements_t CalendarTime;
+RTC_DATA_ATTR todoistData todoistTask;
 
 
 
@@ -277,6 +278,12 @@ void Watchy::showTodoist() {
   uint16_t w, h;
 
   display.setFullWindow();
+  display.drawBitmap(0, 0, myBitmapTDM, 200, 200, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  display.display(true);
+
+
+
+  display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
   display.setFont(&FreeMonoBold8pt7b);
   display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
@@ -284,7 +291,22 @@ void Watchy::showTodoist() {
   display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
   display.println("ToDoist");
-  display.display(true);
+  
+  /*for(int index=0;index<TODOIST_TASK_MAX ; index++)
+  {
+    display.setCursor(0, y+=20); 
+    if (todoistTask.todoistTask[index].isEmpty() == true) 
+    {
+      display.println("Empty fuck!!!");
+    }
+    else
+    {
+      display.println(todoistTask.todoistTask[index]);
+    }
+    
+  }*/
+  //display.display(true);
+  //y=10;
 
   if (connectWiFi()) {
       HTTPClient http; // Use Todoist API for live data if WiFi is connected
@@ -340,8 +362,121 @@ void Watchy::showTodoist() {
   guiState = TODOIST_STATE;
 }
 
+void Watchy::getTodoistData() {
+
+  HTTPClient http; // Use Todoist API for live data if WiFi is connected
+  http.setConnectTimeout(3000); // 3 second max timeout
+  String todoistQueryURL = settings.todoistUrl;
+
+  http.begin(todoistQueryURL.c_str());
+  http.addHeader("Authorization",("Bearer "+ settings.todoistToken));
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode == 200) 
+  {
+    String payload             = http.getString();
+    JSONVar responseObject     = JSON.parse(payload);
+
+    int nbTask = responseObject.length();
+    if(nbTask> TODOIST_TASK_MAX)
+    {
+      nbTask = TODOIST_TASK_MAX;
+    }
+    Serial.println("todoist task :");
+    for(int index=0;index<nbTask ; index++)
+    {
+      String task = responseObject[index]["content"];
+      task = task.substring(0,22);
+      todoistTask.todoistTask[index]=task;
+      String taskId = responseObject[index]["id"];
+      todoistTask.todoistId[index]=taskId;
+
+      Serial.println(todoistTask.todoistTask[index]+" "+todoistTask.todoistId[index]);
+    }
+
+  } 
+
+  http.end();
+    
+}
 
 void Watchy::showCalendar(tmElements_t calendarTime) {
+  
+  int16_t y=10;
+  int16_t x=10;
+  int16_t x1, y1;
+  uint16_t w, h;
+  String monthYear ="";
+
+  display.setFullWindow();
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  display.setFont(&FreeMonoBold8pt7b);
+  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  //Centre calendar word
+  display.getTextBounds("Calendar",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("Calendar");
+
+  //Display Month an year of calendar
+  y+=20;
+  monthYear = monthStr(calendarTime.Month) + String(" ") + String(tmYearToCalendar(calendarTime.Year));
+  display.getTextBounds(monthYear,x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println(monthYear);
+  
+  // display a full month on a calendar 
+  y+=20;
+  //Centre calendar word
+  display.getTextBounds("Mo Tu We Th Fr Sa Su",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("Mo Tu We Th Fr Sa Su");
+
+  //get day start of the first week
+  int startDay = startDayOfWeek(tmYearToCalendar(calendarTime.Year), calendarTime.Month,1);
+
+  // get number of days in month
+  int monthLength = 0;
+  
+  if (calendarTime.Month == 1 || calendarTime.Month == 3 || calendarTime.Month == 5 || calendarTime.Month == 7 || calendarTime.Month == 8 || calendarTime.Month == 10 || calendarTime.Month == 12){
+    monthLength = 31;
+  } else if(calendarTime.Month== 2){
+    if (tmYearToCalendar(calendarTime.Year)==(tmYearToCalendar(calendarTime.Year)/4)*4){
+      monthLength = 29;
+    }else{
+      monthLength = 28;
+    }
+  } else {
+    monthLength = 30;
+  }
+
+  int lineIndex = startDay * 3;
+  String week="";
+
+  for(int i=0 ; i<lineIndex ; i+=3)
+  {
+    week += "   ";
+  }
+
+  int day = 1;
+
+  while( day <= monthLength )
+  {
+    while((lineIndex < 21) && (day <= monthLength))
+    {
+      week += dayToString(day);
+      lineIndex += 3;
+      day++;
+    }
+    lineIndex = 0;
+    display.setCursor(x,y+=20);
+    display.println(week);
+    week="";
+  }
+  display.display(true);
+  guiState = CALENDAR_STATE;
+}
+
+void Watchy::showCalendarOLD(tmElements_t calendarTime) {
 
   int monthLength = 0;
   int startDay = 0; // Sunday's value is 0, Saturday is 6
@@ -393,7 +528,6 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   } else {
     monthLength = 30;
   }
-  
   startDay = startDayOfWeek(tmYearToCalendar(calendarTime.Year), calendarTime.Month,1); // Sunday's value is 0
   // now build first week string
   switch (startDay){
@@ -911,6 +1045,8 @@ weatherData Watchy::getWeatherData(String cityID, String units, String lang,
         // sync NTP during weather API call and use timezone of city
         gmtOffset = int(responseObject["timezone"]);
         syncNTP(gmtOffset);
+        //get todoist data
+        getTodoistData();
       } else {
         // http error
       }
@@ -1384,6 +1520,18 @@ int Watchy::startDayOfWeek(int y, int m, int d){
   y -= m < 3;
   return (y +y/4 -y/100 + y/400 + t[m-1] + d)% 7; 
 } 
+
+String Watchy::dayToString(int _day)
+{
+  String day = "";
+  if(_day<10)
+  {
+    day+=" ";
+  }
+  day+= String(_day); 
+  day+=" ";
+  return(day);
+}
 
 u_int16_t Watchy::getTextColor()
 {

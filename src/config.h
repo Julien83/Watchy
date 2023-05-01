@@ -83,4 +83,8 @@
 #define HARDWARE_VERSION_MINOR 0
 // Versioning
 #define WATCHY_LIB_VER "1.4.6"
+
+//TODOIST
+#define TODOIST_TASK_MAX  8
+
 #endif
