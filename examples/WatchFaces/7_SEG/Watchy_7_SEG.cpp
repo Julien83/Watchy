@@ -7,6 +7,13 @@ const uint8_t BATTERY_SEGMENT_SPACING = 9;
 const uint8_t WEATHER_ICON_WIDTH = 48;
 const uint8_t WEATHER_ICON_HEIGHT = 32;
 
+void Watchy7SEG::showAlarme(){
+    display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+    display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawBitmap(120, 77, wifi, 26, 18, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.display();
+}
+
 void Watchy7SEG::drawWatchFace(){
     display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
     display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);

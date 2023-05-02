@@ -63,6 +63,7 @@
 #define FW_UPDATE_STATE 2
 #define CALENDAR_STATE  3
 #define TODOIST_STATE   4
+#define ALARME_STATE    5
 
 #define MENU_HEIGHT     25
 #define MENU_LENGTH     7

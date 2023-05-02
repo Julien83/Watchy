@@ -109,6 +109,7 @@ void Watchy::deepSleep() {
 
 void Watchy::handleButtonPress() {
   uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
+  Serial.println(wakeupBit);
   // Menu Button
   if (wakeupBit & MENU_BTN_MASK) {
     if (guiState ==
@@ -161,7 +162,7 @@ void Watchy::handleButtonPress() {
       RTC.read(CalendarTime);
       showCalendar(CalendarTime);
       return;
-    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)) {
+    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)||(guiState == ALARME_STATE)) {
       RTC.read(currentTime);
       showWatchFace(true);
       return;
@@ -211,6 +212,8 @@ void Watchy::handleButtonPress() {
       }
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
+      showAlarme();
+      guiState = ALARME_STATE;
       return;
     } else if (guiState == CALENDAR_STATE) {
       // display Next month
@@ -269,7 +272,27 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
   alreadyInMenu = false;
 }
 
+void Watchy::showAlarme() {
 
+  int16_t x = 5;
+  int16_t y = 10;
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  display.setFullWindow();
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  display.setFont(&FreeMonoBold8pt7b);
+  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  //Centre calendar word
+  display.getTextBounds("ALARME",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("ALARME");
+  display.drawBitmap(0,20,battest,37,21,GxEPD_BLACK);
+  
+  display.display(true);
+
+  
+}
 void Watchy::showTodoist() {
 
   int16_t x = 5;
@@ -278,7 +301,8 @@ void Watchy::showTodoist() {
   uint16_t w, h;
 
   display.setFullWindow();
-  display.drawBitmap(0, 0, myBitmapTDM, 200, 200, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  display.fillScreen(GxEPD_BLACK);
+  display.drawBitmap(0, 0, sully, 200, 200,GxEPD_WHITE);
   display.display(true);
 
 

@@ -85,6 +85,7 @@ public:
   void showCalendarOLD(tmElements_t calendarTime);
   void showTodoist();
   void getTodoistData(); 
+  void showAlarme();
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
   void showAbout();
