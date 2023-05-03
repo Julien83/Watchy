@@ -84,7 +84,8 @@ public:
   void showCalendar(tmElements_t calendarTime);
   void showCalendarOLD(tmElements_t calendarTime);
   void showTodoist();
-  void getTodoistData(); 
+  void displayTodoist();
+  bool getTodoistData(); 
   void showAlarme();
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
@@ -99,6 +100,7 @@ public:
   void setTime();
   void setupWifi();
   bool connectWiFi();
+  void showScanWiFi();
   weatherData getWeatherData();
   weatherData getWeatherData(String cityID, String units, String lang,
                              String url, String apiKey, uint8_t updateInterval,

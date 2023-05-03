@@ -122,7 +122,8 @@ void Watchy::handleButtonPress() {
         showAbout();
         break;
       case 1:
-        showBuzz();
+        showScanWiFi();
+        //showBuzz();
         break;
       case 2:
         showAccelerometer();
@@ -249,7 +250,7 @@ void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
   int16_t yPos;
 
   const char *menuItems[] = {
-      "About Watchy", "Vibrate Motor", "Show Accelerometer",
+      "About Watchy", "Scan Wifi", "Show Accelerometer",
       "Set Time",     "Setup WiFi",    "Update Firmware",
       "Sync NTP"};
   for (int i = 0; i < MENU_LENGTH; i++) {
@@ -295,6 +296,22 @@ void Watchy::showAlarme() {
 }
 void Watchy::showTodoist() {
 
+  displayTodoist();
+  if (connectWiFi())
+  {
+    if(getTodoistData()== true)
+    {
+      displayTodoist();
+    }
+  }
+  
+
+  display.display(true);
+  guiState = TODOIST_STATE;
+}
+
+void Watchy::displayTodoist() {
+
   int16_t x = 5;
   int16_t y = 10;
   int16_t x1, y1;
@@ -304,8 +321,6 @@ void Watchy::showTodoist() {
   display.fillScreen(GxEPD_BLACK);
   display.drawBitmap(0, 0, sully, 200, 200,GxEPD_WHITE);
   display.display(true);
-
-
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
@@ -318,68 +333,18 @@ void Watchy::showTodoist() {
   
   for(int index=0;index<TODOIST_TASK_MAX ; index++)
   {
-    display.setCursor(0, y+=20); 
-    display.println((char*)todoistTask[index].todoistTask);
+    if(todoistTask[index].todoistId != 0)
+    {
+      display.setCursor(0, y+=20); 
+      display.println((char*)todoistTask[index].todoistTask);
+    }
   }
   display.display(true);
-  y=10;
-
-  if (connectWiFi()) {
-      HTTPClient http; // Use Todoist API for live data if WiFi is connected
-      http.setConnectTimeout(3000); // 3 second max timeout
-      String todoistQueryURL = settings.todoistUrl;
-      //display.setCursor(0,y+=20);
-      //display.println(todoistQueryURL);
-
-      http.begin(todoistQueryURL.c_str());
-      http.addHeader("Authorization",("Bearer "+ settings.todoistToken));
-      int httpResponseCode = http.GET();
-      //display.setCursor(0,y+=120);
-      //display.println(httpResponseCode);
-
-      if (httpResponseCode == 200) 
-      {
-        String payload             = http.getString();
-        JSONVar responseObject     = JSON.parse(payload);
-
-        int nbTask = responseObject.length();
-        //Display task
-        for(int index=0;index<nbTask ; index++)
-        {
-          display.setCursor(0, y+=20);
-          String task = responseObject[index]["content"];
-          task = task.substring(0,22);
-          display.println(task);
-        }
-   
-      } 
-      else 
-      {
-        // http error
-        display.getTextBounds("Http error    ",x,y,&x1,&y1,&w,&h);
-        display.setCursor((DISPLAY_WIDTH-w)/2, y+=60);
-        display.print("Http error ");
-        display.println(httpResponseCode);
-      }
-      http.end();
-      // turn off radios
-      WiFi.mode(WIFI_OFF);
-      btStop();
-  }
-  else
-  {
-    display.getTextBounds("WiFi No Found",x,y,&x1,&y1,&w,&h);
-    display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
-    y+=20;
-    display.println("WiFi No Found");
-  }
-
-  display.display(true);
-  guiState = TODOIST_STATE;
 }
 
-void Watchy::getTodoistData() {
+bool Watchy::getTodoistData() {
 
+  bool ret = false;
   HTTPClient http; // Use Todoist API for live data if WiFi is connected
   http.setConnectTimeout(3000); // 3 second max timeout
   String todoistQueryURL = settings.todoistUrl;
@@ -393,12 +358,20 @@ void Watchy::getTodoistData() {
     String payload             = http.getString();
     JSONVar responseObject     = JSON.parse(payload);
 
+    ret = true;
+
     int nbTask = responseObject.length();
     if(nbTask> TODOIST_TASK_MAX)
     {
       nbTask = TODOIST_TASK_MAX;
     }
-    Serial.println("todoist task :");
+    //clean task array
+    for(int index=0;index<nbTask ; index++)
+    {
+      memset(todoistTask[index].todoistTask,0x00,22);
+      todoistTask[index].todoistId = 0;
+    }
+    //record task
     for(int index=0;index<nbTask ; index++)
     {
       String task = responseObject[index]["content"];
@@ -411,7 +384,7 @@ void Watchy::getTodoistData() {
   } 
 
   http.end();
-    
+  return(ret); 
 }
 
 void Watchy::showCalendar(tmElements_t calendarTime) {
@@ -1365,6 +1338,62 @@ bool Watchy::connectWiFi() {
   }
   
   return WIFI_CONFIGURED;
+}
+
+void Watchy::showScanWiFi() {
+
+  int16_t x = 5;
+  int16_t y = 10;
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  display.setFullWindow();
+  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  display.setFont(&FreeMonoBold8pt7b);
+  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  //Centre calendar word
+  display.getTextBounds("SCAN WIFI",x,y,&x1,&y1,&w,&h);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.println("SCAN WIFI");
+  
+  display.display(true);
+
+  String localSsid="";
+  String localPwd="OPEN";
+  int staFound = false;
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+  int n = WiFi.scanNetworks();
+  display.setCursor(x, y+=20);
+  display.println("scan done");
+  if (n == 0) 
+  {
+    display.setCursor(x, y+=20);
+    display.println("no networks found");
+  } 
+  else 
+  {
+    display.setCursor(x, y+=20);
+    display.print(n);
+    display.println(" networks found");
+    for (int i = 0; i < n; ++i) 
+    {
+      // Print SSID and RSSI for each network found
+      display.setCursor(x, y+=20);
+      display.print(i + 1);
+      display.print(": ");
+      display.print(WiFi.SSID(i).c_str());
+      display.print(" (");
+      display.print(WiFi.RSSI(i));
+      display.print(")");
+      display.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+     
+    }
+  }
+  display.display(true);
+  WiFi.mode(WIFI_OFF);
+  btStop();
 }
 
 void Watchy::showUpdateFW() {
