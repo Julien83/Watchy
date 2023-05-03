@@ -426,11 +426,13 @@ void Watchy::getTodoistData() {
 
 void Watchy::showCalendar(tmElements_t calendarTime) {
   
-  int16_t y=10;
+  int16_t y=20;
   int16_t x=10;
   int16_t x1, y1;
   uint16_t w, h;
   String monthYear ="";
+  tmElements_t timeNow;
+  bool thisMonth = false;
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
@@ -442,17 +444,14 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
   display.println("Calendar");
 
   //Display Month an year of calendar
-  y+=20;
   monthYear = monthStr(calendarTime.Month) + String(" ") + String(tmYearToCalendar(calendarTime.Year));
   display.getTextBounds(monthYear,x,y,&x1,&y1,&w,&h);
-  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
   display.println(monthYear);
   
-  // display a full month on a calendar 
-  y+=20;
-  //Centre calendar word
+  // display day of this week 
   display.getTextBounds("Mo Tu We Th Fr Sa Su",x,y,&x1,&y1,&w,&h);
-  display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  display.setCursor((DISPLAY_WIDTH-w)/2, y+=20);
   display.println("Mo Tu We Th Fr Sa Su");
 
   //get day start of the first week
@@ -496,6 +495,21 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
     display.println(week);
     week="";
   }
+
+  //if the displayed month is this month, display a square around the day
+  RTC.read(timeNow);
+
+  if((timeNow.Year == calendarTime.Year)&&(timeNow.Month == calendarTime.Month))
+  {
+    int line = (timeNow.Day + startDay - 1) / 7;
+    int pos =  (timeNow.Day + startDay - 1) % 7;
+
+    x= 10 + ((9*3)*pos);
+    y = 65 + (20 * line);
+    display.drawRoundRect(x,y,20,20,2,DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawRect(0,0,200,200,DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  }
+
   display.display(true);
   guiState = CALENDAR_STATE;
 }
