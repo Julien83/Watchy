@@ -16,7 +16,7 @@ RTC_DATA_ATTR long gmtOffset = 0;
 RTC_DATA_ATTR bool alreadyInMenu         = true;
 RTC_DATA_ATTR tmElements_t bootTime;
 RTC_DATA_ATTR tmElements_t CalendarTime;
-RTC_DATA_ATTR todoistData todoistTask;
+RTC_DATA_ATTR todoistData todoistTask[TODOIST_TASK_MAX];
 
 
 
@@ -316,21 +316,13 @@ void Watchy::showTodoist() {
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
   display.println("ToDoist");
   
-  /*for(int index=0;index<TODOIST_TASK_MAX ; index++)
+  for(int index=0;index<TODOIST_TASK_MAX ; index++)
   {
     display.setCursor(0, y+=20); 
-    if (todoistTask.todoistTask[index].isEmpty() == true) 
-    {
-      display.println("Empty fuck!!!");
-    }
-    else
-    {
-      display.println(todoistTask.todoistTask[index]);
-    }
-    
-  }*/
-  //display.display(true);
-  //y=10;
+    display.println((char*)todoistTask[index].todoistTask);
+  }
+  display.display(true);
+  y=10;
 
   if (connectWiFi()) {
       HTTPClient http; // Use Todoist API for live data if WiFi is connected
@@ -411,11 +403,9 @@ void Watchy::getTodoistData() {
     {
       String task = responseObject[index]["content"];
       task = task.substring(0,22);
-      todoistTask.todoistTask[index]=task;
+      task.toCharArray(todoistTask[index].todoistTask,22);
       String taskId = responseObject[index]["id"];
-      todoistTask.todoistId[index]=taskId;
-
-      Serial.println(todoistTask.todoistTask[index]+" "+todoistTask.todoistId[index]);
+      todoistTask[index].todoistId = taskId.toInt();
     }
 
   } 

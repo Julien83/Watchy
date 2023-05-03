@@ -54,8 +54,8 @@ typedef struct watchySettings {
 
 typedef struct todoistData {
 
-  String todoistTask[TODOIST_TASK_MAX];
-  String todoistId[TODOIST_TASK_MAX];
+  char todoistTask[22];
+  int todoistId;
 
 } todoistData;
 
