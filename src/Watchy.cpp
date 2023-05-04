@@ -366,7 +366,7 @@ bool Watchy::getTodoistData() {
       nbTask = TODOIST_TASK_MAX;
     }
     //clean task array
-    for(int index=0;index<nbTask ; index++)
+    for(int index=0; index<TODOIST_TASK_MAX ; index++)
     {
       memset(todoistTask[index].todoistTask,0x00,22);
       todoistTask[index].todoistId = 0;
@@ -380,9 +380,7 @@ bool Watchy::getTodoistData() {
       String taskId = responseObject[index]["id"];
       todoistTask[index].todoistId = taskId.toInt();
     }
-
   } 
-
   http.end();
   return(ret); 
 }
@@ -1382,12 +1380,12 @@ void Watchy::showScanWiFi() {
       // Print SSID and RSSI for each network found
       display.setCursor(x, y+=20);
       display.print(i + 1);
-      display.print(": ");
-      display.print(WiFi.SSID(i).c_str());
-      display.print(" (");
-      display.print(WiFi.RSSI(i));
-      display.print(")");
-      display.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+      display.print(":");
+      display.print(WiFi.SSID(i).substring(0,19));
+      //display.print(" (");
+      //display.print(WiFi.RSSI(i));
+      //display.print(")");
+      display.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?"#":"*");
      
     }
   }
