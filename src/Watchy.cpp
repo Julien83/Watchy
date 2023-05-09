@@ -313,31 +313,39 @@ void Watchy::showTodoist() {
 void Watchy::displayTodoist() {
 
   int16_t x = 5;
-  int16_t y = 10;
+  int16_t y = 30;
   int16_t x1, y1;
   uint16_t w, h;
+  bool taskFound = false;
 
-  display.setFullWindow();
+  /*display.setFullWindow();
   display.fillScreen(GxEPD_BLACK);
   display.drawBitmap(0, 0, sully, 200, 200,GxEPD_WHITE);
-  display.display(true);
+  display.display(true);*/
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
-  display.setFont(&FreeMonoBold8pt7b);
+  display.setFont(&DSEG7_Classic_Bold_25);
   display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
   //Centre calendar word
   display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
   display.println("ToDoist");
+
+  display.setFont(&FreeMonoBold8pt7b);
   
   for(int index=0;index<TODOIST_TASK_MAX ; index++)
   {
     if(todoistTask[index].todoistId != 0)
     {
+      taskFound = true;
       display.setCursor(0, y+=20); 
       display.println((char*)todoistTask[index].todoistTask);
     }
+  }
+  if(taskFound == false)
+  {
+    display.println("No Task Today !!!");
   }
   display.display(true);
 }

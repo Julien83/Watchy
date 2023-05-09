@@ -12,6 +12,7 @@
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include "FreeMonoBold8pt7b.h"
 #include "DSEG7_Classic_Bold_53.h"
+#include "DSEG7_Classic_Bold_25.h"
 #include "Display.h"
 #include "WatchyRTC.h"
 #include "BLE.h"
