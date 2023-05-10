@@ -99,6 +99,7 @@ public:
   void displayTodoist();
   bool getTodoistData(); 
   void showAlarme();
+  void showSleep();
   void showMenu(byte menuIndex, bool partialRefresh);
   void showFastMenu(byte menuIndex);
   void showAbout();

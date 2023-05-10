@@ -105,8 +105,11 @@ void Watchy::deepSleep() {
       continue;
     pinMode(i, INPUT);
   }
-  esp_sleep_enable_ext0_wakeup((gpio_num_t)RTC_INT_PIN,
-                               0); // enable deep sleep wake on RTC interrupt
+  if(guiState != SLEEP_STATE)
+  {
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)RTC_INT_PIN,0); // enable deep sleep wake on RTC interrupt
+  }
+
   esp_sleep_enable_ext1_wakeup(
       BTN_PIN_MASK,
       ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
@@ -169,7 +172,7 @@ void Watchy::handleButtonPress() {
       RTC.read(CalendarTime);
       showCalendar(CalendarTime);
       return;
-    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)||(guiState == ALARME_STATE)) {
+    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)||(guiState == SLEEP_STATE)) {
       RTC.read(currentTime);
       showWatchFace(true);
       return;
@@ -219,8 +222,8 @@ void Watchy::handleButtonPress() {
       }
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
-      showAlarme();
-      guiState = ALARME_STATE;
+      showSleep();
+      guiState = SLEEP_STATE;
       return;
     } else if (guiState == CALENDAR_STATE) {
       // display Next month
@@ -303,6 +306,14 @@ void Watchy::showAlarme() {
 
   
 }
+
+void Watchy::showSleep() {
+  display.setFullWindow();
+  display.fillScreen(GxEPD_BLACK);
+  display.drawBitmap(0, 0, pictureSleep, 200, 200,GxEPD_WHITE);
+  display.display(true);
+}
+
 void Watchy::showTodoist() {
 
   displayTodoist();

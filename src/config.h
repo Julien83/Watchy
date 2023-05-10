@@ -65,8 +65,9 @@
 #define CALENDAR_STATE  5
 #define TODOIST_STATE   6
 #define ALARME_STATE    7
+#define SLEEP_STATE     8
 
-#define GUI_NUMBER      7
+#define GUI_NUMBER      8
 
 
 
