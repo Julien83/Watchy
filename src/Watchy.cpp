@@ -17,6 +17,7 @@ RTC_DATA_ATTR bool alreadyInMenu         = true;
 RTC_DATA_ATTR tmElements_t bootTime;
 RTC_DATA_ATTR tmElements_t CalendarTime;
 RTC_DATA_ATTR todoistData todoistTask[TODOIST_TASK_MAX];
+//guiData guiDataTab[GUI_NUMBER];
 
 
 
@@ -78,6 +79,11 @@ void Watchy::init(String datetime) {
   }
   deepSleep();
 }
+
+void Watchy::initGuiData() {
+  
+}
+
 
 void Watchy::displayBusyCallback(const void *) {
   gpio_wakeup_enable((gpio_num_t)DISPLAY_BUSY, GPIO_INTR_LOW_LEVEL);
@@ -281,14 +287,17 @@ void Watchy::showAlarme() {
   uint16_t w, h;
 
   display.setFullWindow();
-  display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
-  display.setFont(&FreeMonoBold8pt7b);
-  display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+  //display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
+  //display.setFont(&FreeMonoBold8pt7b);
+  //display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
   //Centre calendar word
-  display.getTextBounds("ALARME",x,y,&x1,&y1,&w,&h);
-  display.setCursor((DISPLAY_WIDTH-w)/2, y);
-  display.println("ALARME");
-  display.drawBitmap(0,20,battest,37,21,GxEPD_BLACK);
+  //display.getTextBounds("ALARME",x,y,&x1,&y1,&w,&h);
+  //display.setCursor((DISPLAY_WIDTH-w)/2, y);
+  //display.println("ALARME");
+
+  display.fillScreen(GxEPD_BLACK);
+  display.drawBitmap(0, 0, pictureSleep, 200, 200,GxEPD_WHITE);
+  
   
   display.display(true);
 

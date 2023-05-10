@@ -57,13 +57,18 @@
 #define WIFI_STA_NB     4
 
 // menu
-#define WATCHFACE_STATE -1
-#define MAIN_MENU_STATE 0
-#define APP_STATE       1
-#define FW_UPDATE_STATE 2
-#define CALENDAR_STATE  3
-#define TODOIST_STATE   4
-#define ALARME_STATE    5
+#define GUI_NONE        0
+#define WATCHFACE_STATE 1
+#define MAIN_MENU_STATE 2
+#define APP_STATE       3
+#define FW_UPDATE_STATE 4
+#define CALENDAR_STATE  5
+#define TODOIST_STATE   6
+#define ALARME_STATE    7
+
+#define GUI_NUMBER      7
+
+
 
 #define MENU_HEIGHT     25
 #define MENU_LENGTH     7

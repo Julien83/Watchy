@@ -19,6 +19,7 @@
 #include "bma.h"
 #include "config.h"
 #include "Picture.h"
+#include <iostream>
 
 
 typedef struct weatherData {
@@ -60,6 +61,15 @@ typedef struct todoistData {
 
 } todoistData;
 
+typedef void(*GeneralFunction) ();
+
+typedef struct guiData {
+  int guiId;
+  int nextGuiId[4];
+  const GeneralFunction buttonFunction[4];
+
+} guiData;
+
 
 
 
@@ -74,6 +84,7 @@ public:
 public:
   explicit Watchy(const watchySettings &s) : settings(s) {} // constructor
   void init(String datetime = "");
+  void initGuiData();
   void deepSleep();
   static void displayBusyCallback(const void *);
   float getBatteryVoltage();
