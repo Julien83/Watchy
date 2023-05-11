@@ -172,13 +172,16 @@ void Watchy::handleButtonPress() {
       RTC.read(CalendarTime);
       showCalendar(CalendarTime);
       return;
-    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)||(guiState == SLEEP_STATE)) {
+    }else if ((guiState == CALENDAR_STATE)||(guiState == TODOIST_STATE)) {
       RTC.read(currentTime);
       showWatchFace(true);
       return;
+    }else if (guiState == SLEEP_STATE) {
+      RTC.read(currentTime);
+      showWatchFace(true);
+      refreshData();
+      return;
     }
-
-    
   }
   // Up Button
   else if (wakeupBit & UP_BTN_MASK) {
@@ -222,6 +225,7 @@ void Watchy::handleButtonPress() {
       }
       showMenu(menuIndex, true);
     } else if (guiState == WATCHFACE_STATE) {
+      noRefreshData();
       showSleep();
       guiState = SLEEP_STATE;
       return;
@@ -248,6 +252,15 @@ void Watchy::handleButtonPress() {
     }
   }
 }
+void Watchy::refreshData()
+{
+  weatherIntervalCounter = -1;
+}
+void Watchy::noRefreshData()
+{
+  weatherIntervalCounter = 0;
+}
+
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh) {
   display.setFullWindow();
@@ -317,16 +330,6 @@ void Watchy::showSleep() {
 void Watchy::showTodoist() {
 
   displayTodoist();
-  if (connectWiFi())
-  {
-    if(getTodoistData()== true)
-    {
-      displayTodoist();
-    }
-  }
-  
-
-  display.display(true);
   guiState = TODOIST_STATE;
 }
 
@@ -345,12 +348,12 @@ void Watchy::displayTodoist() {
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
-  display.setFont(&DSEG7_Classic_Bold_25);
+  display.setFont(&FreeMonoBold24pt7b);
   display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
   //Centre calendar word
-  display.getTextBounds("ToDoist",x,y,&x1,&y1,&w,&h);
+  display.getTextBounds("Task",x,y,&x1,&y1,&w,&h);
   display.setCursor((DISPLAY_WIDTH-w)/2, y);
-  display.println("ToDoist");
+  display.println("Task");
 
   display.setFont(&FreeMonoBold8pt7b);
   
@@ -365,6 +368,7 @@ void Watchy::displayTodoist() {
   }
   if(taskFound == false)
   {
+    display.setCursor(0, y+=20);
     display.println("No Task Today !!!");
   }
   display.display(true);
