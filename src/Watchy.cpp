@@ -64,7 +64,7 @@ void Watchy::init(String datetime) {
       break;
     }
     break;
-  case ESP_SLEEP_WAKEUP_EXT1: // button Press
+  case ESP_SLEEP_WAKEUP_EXT1: // button Press or accelerometre int
     handleButtonPress();
     break;
   default: // reset
@@ -250,6 +250,17 @@ void Watchy::handleButtonPress() {
       showCalendar(CalendarTime);
       return;
     }
+  }
+  //ACC Int
+  else if (wakeupBit & ACC_INT_MASK) {
+    Serial.println("Wakeup Acc !!!");
+    sensor.getINT();
+    if(sensor.isDoubleClick())
+    {
+      Serial.println("isDoubleClick !!!");
+      vibMotor(75, 10);
+    }
+    
   }
 }
 void Watchy::refreshData()
