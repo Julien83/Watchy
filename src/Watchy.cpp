@@ -108,11 +108,13 @@ void Watchy::deepSleep() {
   if(guiState != SLEEP_STATE)
   {
     esp_sleep_enable_ext0_wakeup((gpio_num_t)RTC_INT_PIN,0); // enable deep sleep wake on RTC interrupt
+    esp_sleep_enable_ext1_wakeup(BTN_ACC_PIN_MASK,ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press and acc
+  }
+  else
+  {
+    esp_sleep_enable_ext1_wakeup(BTN_PIN_MASK,ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
   }
 
-  esp_sleep_enable_ext1_wakeup(
-      BTN_PIN_MASK,
-      ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
   esp_deep_sleep_start();
 }
 
@@ -258,7 +260,12 @@ void Watchy::handleButtonPress() {
     if(sensor.isDoubleClick())
     {
       Serial.println("isDoubleClick !!!");
-      vibMotor(75, 10);
+      vibMotor(200, 4);
+    }
+    else if(sensor.isTilt())
+    {
+      Serial.println("isTilt !!!");
+      vibMotor(400, 2);
     }
     
   }
