@@ -260,7 +260,14 @@ void Watchy::handleButtonPress() {
     if(sensor.isDoubleClick())
     {
       Serial.println("isDoubleClick !!!");
-      vibMotor(200, 4);
+      
+      uint8_t direction = sensor.getDirection();
+
+      if (direction == DIRECTION_DISP_UP)
+      {
+        Serial.println("On Face Up !!!");
+        vibMotor(200, 4);
+      }
     }
     else if(sensor.isTilt())
     {
