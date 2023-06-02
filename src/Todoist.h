@@ -25,19 +25,19 @@
 enum retError{Success = 0,ErrNoConnection,ErrListToSmall};
 
 typedef struct todoistProjectList {
-
-  String name;
-  String Id;
-
-} todoistProjectList;
+      String name;
+      String Id;
+      } ;
 
 class Todoist
 {
   public:
     // attributes
-    static const String todoistUrl = "https://api.todoist.com/rest/v2/";
-    static const String todoistTaskDirectory = "tasks";
-    static const String todoistProjectDirectory = "projects";
+    const String todoistUrl = "https://api.todoist.com/rest/v2/";
+    const String todoistTaskDirectory = "tasks";
+    const String todoistProjectDirectory = "projects";
+    
+    
 
     // constructor
     Todoist(String apiKey);
@@ -45,7 +45,7 @@ class Todoist
     //Public Function
     void getTaskByProject(String projectId); // get task on specifique project
 	void getTaskByFilter(String Filter); // get task on specifique Filter
-	void getProjectList(void); // get list of Project
+	void getProjectList(todoistProjectList _projetlist[]); // get list of Project
 	
     
   private:

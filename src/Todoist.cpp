@@ -23,7 +23,7 @@ Todoist::Todoist(String _apiKey)
 }
 
 // get list of Project
-uint8_t Todoist::getProjectList(void) 
+uint8_t Todoist::getProjectList(todoistProjectList _projetlist[]) 
 {
   uint8_t ret = Success;
 
@@ -51,9 +51,11 @@ uint8_t Todoist::getProjectList(void)
     //record project
     for(int index=0;index<nbProject ; index++)
     {
-      todoistProjectList projectList[nbProject];
-      projectList[index].name = responseObject[index]["content"];
-      projectList[index].Id= responseObject[index]["id"];
+      //todoistProjectList projectList[nbProject];
+      //projectList[index].name = responseObject[index]["content"];
+      //projectList[index].Id= responseObject[index]["id"];
+      _projetlist[index].name = responseObject[index]["content"];
+      _projetlist[index].Id= responseObject[index]["id"];
     }
   } 
   else

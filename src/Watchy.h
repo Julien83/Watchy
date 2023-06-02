@@ -21,6 +21,7 @@
 #include "config.h"
 #include "Picture.h"
 #include <iostream>
+#include "Todoist.h"
 
 
 typedef struct weatherData {
