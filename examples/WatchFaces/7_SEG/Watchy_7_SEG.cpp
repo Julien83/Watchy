@@ -12,6 +12,7 @@ void Watchy7SEG::showAlarme(){
     display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.drawBitmap(120, 77, wifi, 26, 18, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.display();
+    display.
 }
 
 void Watchy7SEG::drawWatchFace(){
