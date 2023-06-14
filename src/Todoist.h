@@ -45,7 +45,7 @@ class Todoist
     //Public Function
     void getTaskByProject(String projectId); // get task on specifique project
 	void getTaskByFilter(String Filter); // get task on specifique Filter
-	void getProjectList(todoistProjectList _projetlist[]); // get list of Project
+	uint8_t Todoist getProjectList(todoistProjectList _projetlist[]); // get list of Project
 	
     
   private:
