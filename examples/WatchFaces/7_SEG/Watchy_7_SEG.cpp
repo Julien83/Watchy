@@ -6,6 +6,8 @@ const uint8_t BATTERY_SEGMENT_HEIGHT = 11;
 const uint8_t BATTERY_SEGMENT_SPACING = 9;
 const uint8_t WEATHER_ICON_WIDTH = 48;
 const uint8_t WEATHER_ICON_HEIGHT = 32;
+const uint8_t PIT_BOY_OFFSET = 20;
+
 
 void Watchy7SEG::showAlarme(){
     display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
@@ -17,7 +19,7 @@ void Watchy7SEG::showAlarme(){
 void Watchy7SEG::drawWatchFace(){
     display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
     display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
-    drawTime();
+    /*drawTime();
     drawDate();
     drawSteps();
     drawWeather();
@@ -25,12 +27,16 @@ void Watchy7SEG::drawWatchFace(){
     display.drawBitmap(120, 77, WIFI_CONFIGURED ? wifi : wifioff, 26, 18, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     if(BLE_CONFIGURED){
         display.drawBitmap(100, 75, bluetooth, 13, 21, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
-    }
+    }*/
+    drawTime();
+    drawDate();
+    drawPitBoy();
+    drawSteps();
 }
 
 void Watchy7SEG::drawTime(){
     display.setFont(&DSEG7_Classic_Bold_53);
-    display.setCursor(5, 53+5);
+    display.setCursor(5, 53+5+PIT_BOY_OFFSET);
     int displayHour;
     if(HOUR_12_24==12){
       displayHour = ((currentTime.Hour+11)%12)+1;
@@ -59,21 +65,21 @@ void Watchy7SEG::drawDate(){
     if(currentTime.Wday == 4){
         w = w - 5;
     }
-    display.setCursor(85 - w, 85);
+    display.setCursor(85 - w, 85+PIT_BOY_OFFSET);
     display.println(dayOfWeek);
 
     String month = monthShortStr(currentTime.Month);
     display.getTextBounds(month, 60, 110, &x1, &y1, &w, &h);
-    display.setCursor(85 - w, 110);
+    display.setCursor(85 - w, 110+PIT_BOY_OFFSET);
     display.println(month);
 
     display.setFont(&DSEG7_Classic_Bold_25);
-    display.setCursor(5, 120);
+    display.setCursor(5, 120+PIT_BOY_OFFSET);
     if(currentTime.Day < 10){
     display.print("0");
     }
     display.println(currentTime.Day);
-    display.setCursor(5, 150);
+    display.setCursor(5, 150 + PIT_BOY_OFFSET);
     display.println(tmYearToCalendar(currentTime.Year));// offset from 1970, since year is stored in uint8_t
 }
 void Watchy7SEG::drawSteps(){
@@ -81,8 +87,9 @@ void Watchy7SEG::drawSteps(){
     if (currentTime.Hour == 0 && currentTime.Minute == 0){
       sensor.resetStepCounter();
     }
+     display.setFont(&Seven_Segment10pt7b);
     uint32_t stepCount = sensor.getCounter();
-    display.drawBitmap(10, 165, steps, 19, 23, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawBitmap(10, 165+10, steps, 19, 23, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.setCursor(35, 190);
     display.println(stepCount);
 }
@@ -151,4 +158,33 @@ void Watchy7SEG::drawWeather(){
     }else
     return;
     display.drawBitmap(145, 158, weatherIcon, WEATHER_ICON_WIDTH, WEATHER_ICON_HEIGHT, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    
+    
+}
+
+
+void Watchy7SEG::drawPitBoy(){
+
+    int8_t batteryLevel = 0;
+    float VBAT = getBatteryVoltage();
+    if(VBAT <= 3.80){
+        display.drawBitmap(100, 100, PitBoyBad100, 100, 100, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    }
+    else{
+        display.drawBitmap(100, 100, PitBoy100, 100, 100, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    }
+
+    //Bandeau menu 
+    display.setFont(&FreeMonoBold8pt7b);
+    display.setCursor(0,10);
+    display.println(" STAT TODO DATE ROMBA ");//22car
+    
+    
+    display.drawLine(0,15,4,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawLine(4,15,4,5, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawLine(4,5,8,5, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawLine(45,5,50,5, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawLine(50,5,50,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawLine(50,15,200,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+
 }

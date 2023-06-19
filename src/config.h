@@ -50,7 +50,7 @@
 //display
 #define DISPLAY_WIDTH   200
 #define DISPLAY_HEIGHT  200
-#define DARKMODE        false
+#define DARKMODE        true
 // wifi
 #define WIFI_AP_TIMEOUT 60
 #define WIFI_AP_SSID    "Watchy AP"

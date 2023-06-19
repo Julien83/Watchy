@@ -19,6 +19,7 @@ class Watchy7SEG : public Watchy{
         void drawWeather();
         void drawBattery();
         void showAlarme();
+        void drawPitBoy();
 };
 
 #endif

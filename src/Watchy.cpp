@@ -400,9 +400,9 @@ void Watchy::displayTodoist() {
 }
 
 bool Watchy::getTodoistData() {
-  todoistProjectList projectList[20];
+  /*todoistProjectList projectList[20];
   Todoist todoist = Todoist("3d95d801351220fb297643a380aeb4c69bf328c2") ;
-  todoist.getProjectList(projectList);
+  todoist.getProjectList(projectList);*/
 
   bool ret = false;
   HTTPClient http; // Use Todoist API for live data if WiFi is connected

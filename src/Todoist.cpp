@@ -23,7 +23,7 @@ Todoist::Todoist(String _apiKey)
 }
 
 // get list of Project
-uint8_t Todoist::getProjectList(todoistProjectList _projetlist[]) 
+/*uint8_t Todoist::getProjectList(todoistProjectList _projetlist[]) 
 {
   uint8_t ret = Success;
 
@@ -64,4 +64,4 @@ uint8_t Todoist::getProjectList(todoistProjectList _projetlist[])
   }
   http.end();
   return(ret); 
-}
+}*/
