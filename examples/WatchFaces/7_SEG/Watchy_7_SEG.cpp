@@ -66,21 +66,29 @@ void Watchy7SEG::drawDate(){
         w = w - 5;
     }
     display.setCursor(85 - w, 85+PIT_BOY_OFFSET);
-    display.println(dayOfWeek);
+    //display.println(dayOfWeek);
 
     String month = monthShortStr(currentTime.Month);
     display.getTextBounds(month, 60, 110, &x1, &y1, &w, &h);
     display.setCursor(85 - w, 110+PIT_BOY_OFFSET);
-    display.println(month);
+    //display.println(month);
 
     display.setFont(&DSEG7_Classic_Bold_25);
     display.setCursor(5, 120+PIT_BOY_OFFSET);
     if(currentTime.Day < 10){
-    display.print("0");
+    //display.print("0");
     }
-    display.println(currentTime.Day);
+    //display.println(currentTime.Day);
     display.setCursor(5, 150 + PIT_BOY_OFFSET);
-    display.println(tmYearToCalendar(currentTime.Year));// offset from 1970, since year is stored in uint8_t
+    //display.println(tmYearToCalendar(currentTime.Year));// offset from 1970, since year is stored in uint8_t
+
+    display.setFont(&FreeMonoBold9pt7b);
+    
+    display.getTextBounds(dayOfWeek +" "+currentTime.Day+ " " + month + " "+ tmYearToCalendar(currentTime.Year), 0, 0, &x1, &y1, &w, &h);
+
+    display.setCursor(((200-w)/2), 75+PIT_BOY_OFFSET);
+    display.println(dayOfWeek +" "+currentTime.Day+ " " + month + " "+ tmYearToCalendar(currentTime.Year));
+    
 }
 void Watchy7SEG::drawSteps(){
     // reset step counter at midnight
@@ -177,7 +185,7 @@ void Watchy7SEG::drawPitBoy(){
     //Bandeau menu 
     display.setFont(&FreeMonoBold8pt7b);
     display.setCursor(0,10);
-    display.println(" STAT TODO DATE ROMBA ");//22car
+    display.println(" Stat Todo Date Romba ");//22car
     
     
     display.drawLine(0,15,4,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);

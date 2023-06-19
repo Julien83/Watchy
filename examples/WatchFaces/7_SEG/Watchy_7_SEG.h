@@ -6,6 +6,7 @@
 #include "DSEG7_Classic_Regular_15.h"
 #include "DSEG7_Classic_Bold_25.h"
 #include "DSEG7_Classic_Regular_39.h"
+#include <Fonts/FreeSans9pt7b.h>
 #include "icons.h"
 #include "config.h"
 
