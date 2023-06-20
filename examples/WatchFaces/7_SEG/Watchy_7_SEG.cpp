@@ -35,23 +35,38 @@ void Watchy7SEG::drawWatchFace(){
 }
 
 void Watchy7SEG::drawTime(){
-    display.setFont(&DSEG7_Classic_Bold_53);
-    display.setCursor(5, 53+5+PIT_BOY_OFFSET);
+    int16_t  x1, y1;
+    uint16_t w, h;
+    String timeToPrint;
+
+    //display.setFont(&MonoFonto45pt7b);
+    display.setFont(&UbuntuMonoBold40pt7b);
     int displayHour;
     if(HOUR_12_24==12){
       displayHour = ((currentTime.Hour+11)%12)+1;
     } else {
       displayHour = currentTime.Hour;
     }
+
     if(displayHour < 10){
-        display.print("0");
+        //display.print("0");
+        timeToPrint.concat("0");
     }
-    display.print(displayHour);
-    display.print(":");
+    //display.print(displayHour);
+    //display.print(":");
+    timeToPrint.concat(displayHour);
+    timeToPrint.concat(":");
+
     if(currentTime.Minute < 10){
-        display.print("0");
+        //display.print("0");
+        timeToPrint.concat("0");
     }
-    display.println(currentTime.Minute);
+    
+    //display.println(currentTime.Minute);
+    timeToPrint.concat(currentTime.Minute);
+    display.getTextBounds(timeToPrint, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(((200-w)/2), 53+PIT_BOY_OFFSET);
+    display.println(timeToPrint);
 }
 
 void Watchy7SEG::drawDate(){
@@ -82,7 +97,7 @@ void Watchy7SEG::drawDate(){
     display.setCursor(5, 150 + PIT_BOY_OFFSET);
     //display.println(tmYearToCalendar(currentTime.Year));// offset from 1970, since year is stored in uint8_t
 
-    display.setFont(&FreeMonoBold9pt7b);
+    display.setFont(&UbuntuMonoBold10pt7b);
     
     display.getTextBounds(dayOfWeek +" "+currentTime.Day+ " " + month + " "+ tmYearToCalendar(currentTime.Year), 0, 0, &x1, &y1, &w, &h);
 
@@ -183,9 +198,9 @@ void Watchy7SEG::drawPitBoy(){
     }
 
     //Bandeau menu 
-    display.setFont(&FreeMonoBold8pt7b);
-    display.setCursor(0,10);
-    display.println(" Stat Todo Date Romba ");//22car
+    display.setFont(&UbuntuMonoBold8pt7b);
+    display.setCursor(10,12);
+    display.println("Stat  Todo  Date  Room");//22car
     
     
     display.drawLine(0,15,4,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
@@ -194,5 +209,41 @@ void Watchy7SEG::drawPitBoy(){
     display.drawLine(45,5,50,5, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.drawLine(50,5,50,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.drawLine(50,15,200,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+
+    display.setCursor(5,120);
+    display.println("No Task Today");//13car
+
+     weatherData currentWeather = getWeatherData();
+
+    int8_t temperature = currentWeather.temperature;
+    String stemp;
+    stemp.concat(String(currentWeather.temperature));
+    stemp.concat(" C");
+    display.setCursor(5,140);
+    display.println(stemp);
+
+    const unsigned char* weatherIcon;
+    int16_t weatherConditionCode = currentWeather.weatherConditionCode;
+    //https://openweathermap.org/weather-conditions
+    if(weatherConditionCode > 801){//Cloudy
+    weatherIcon = cloudy;
+    }else if(weatherConditionCode == 801){//Few Clouds
+    weatherIcon = cloudsun;
+    }else if(weatherConditionCode == 800){//Clear
+    weatherIcon = sunny;
+    }else if(weatherConditionCode >=700){//Atmosphere
+    weatherIcon = atmosphere;
+    }else if(weatherConditionCode >=600){//Snow
+    weatherIcon = snow;
+    }else if(weatherConditionCode >=500){//Rain
+    weatherIcon = rain;
+    }else if(weatherConditionCode >=300){//Drizzle
+    weatherIcon = drizzle;
+    }else if(weatherConditionCode >=200){//Thunderstorm
+    weatherIcon = thunderstorm;
+    }else
+    return;
+    display.drawBitmap(80,120, weatherIcon, WEATHER_ICON_WIDTH, WEATHER_ICON_HEIGHT, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+
 
 }

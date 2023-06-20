@@ -23,7 +23,7 @@ Todoist::Todoist(String _apiKey)
 }
 
 // get list of Project
-/*uint8_t Todoist::getProjectList(todoistProjectList _projetlist[]) 
+uint8_t Todoist::getProjectList(todoistProjectList _projetlist[]) 
 {
   uint8_t ret = Success;
 
@@ -33,7 +33,7 @@ Todoist::Todoist(String _apiKey)
   String todoistQueryURL = todoistUrl + todoistProjectDirectory;
 
   http.begin(todoistQueryURL.c_str());
-  http.addHeader("Authorization",("Bearer "+ _apiKey));
+  http.addHeader("Authorization",("Bearer "+ apiKey));
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) 
@@ -54,8 +54,11 @@ Todoist::Todoist(String _apiKey)
       //todoistProjectList projectList[nbProject];
       //projectList[index].name = responseObject[index]["content"];
       //projectList[index].Id= responseObject[index]["id"];
-      _projetlist[index].name = responseObject[index]["content"];
-      _projetlist[index].Id= responseObject[index]["id"];
+      String name = responseObject[index]["content"];
+      String id = responseObject[index]["id"];
+      _projetlist[index].name = name;
+      _projetlist[index].Id= id;
+      
     }
   } 
   else
@@ -64,4 +67,4 @@ Todoist::Todoist(String _apiKey)
   }
   http.end();
   return(ret); 
-}*/
+}

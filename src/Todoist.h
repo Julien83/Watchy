@@ -14,6 +14,7 @@
 #pragma once
 
 #include <HTTPClient.h>
+#include <Arduino_JSON.h>
 
 #define PROJECT_LIST_LEN    20
 #define PROJECT_NAME_LEN    20
@@ -27,7 +28,7 @@ enum retError{Success = 0,ErrNoConnection,ErrListToSmall};
 typedef struct todoistProjectList {
       String name;
       String Id;
-      } ;
+      }todoistProjectList ;
 
 class Todoist
 {
@@ -37,19 +38,19 @@ class Todoist
     const String todoistTaskDirectory = "tasks";
     const String todoistProjectDirectory = "projects";
     
-    
+
 
     // constructor
     Todoist(String apiKey);
 	
     //Public Function
-    void getTaskByProject(String projectId); // get task on specifique project
-	void getTaskByFilter(String Filter); // get task on specifique Filter
-	//uint8_t Todoist getProjectList(todoistProjectList _projetlist[]); // get list of Project
+    //void getTaskByProject(String projectId); // get task on specifique project
+	//void getTaskByFilter(String Filter); // get task on specifique Filter
+	  uint8_t getProjectList(todoistProjectList _projetlist[]); // get list of Project
 	
     
   private:
 	//Private Fonction
-    void _blabla(uint8_t a, uint8_t b);
+    //void _blabla(uint8_t a, uint8_t b);
 
 };

@@ -74,7 +74,7 @@ void Watchy::init(String datetime) {
     RTC.read(currentTime);
     RTC.read(bootTime);
     showWatchFace(false); // full update on reset
-    vibMotor(75, 10);
+    //vibMotor(75, 10);
     break;
   }
   deepSleep();

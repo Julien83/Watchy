@@ -9,9 +9,10 @@
 #include <Arduino_JSON.h>
 #include <GxEPD2_BW.h>
 #include <Wire.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
-#include "FreeMonoBold8pt7b.h"
+//#include <Fonts/FreeMonoBold9pt7b.h>
+//#include <Fonts/FreeMonoBold24pt7b.h>
+//#include "FreeMonoBold8pt7b.h"
+#include <Fonts/includefont.h>
 #include "DSEG7_Classic_Bold_53.h"
 #include "DSEG7_Classic_Bold_25.h"
 #include "Display.h"
