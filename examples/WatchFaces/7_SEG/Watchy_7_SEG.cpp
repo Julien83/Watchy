@@ -70,12 +70,14 @@ void Watchy7SEG::drawTime(){
 }
 
 void Watchy7SEG::drawDate(){
-    display.setFont(&Seven_Segment10pt7b);
+    //display.setFont(&Seven_Segment10pt7b);
 
     int16_t  x1, y1;
     uint16_t w, h;
 
-    String dayOfWeek = dayStr(currentTime.Wday);
+    //String dayOfWeek = dayStr(currentTime.Wday);
+    String dayOfWeek = dayShortStr(currentTime.Wday);
+    
     display.getTextBounds(dayOfWeek, 5, 85, &x1, &y1, &w, &h);
     if(currentTime.Wday == 4){
         w = w - 5;
@@ -210,17 +212,16 @@ void Watchy7SEG::drawPitBoy(){
     display.drawLine(50,5,50,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.drawLine(50,15,200,15, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
 
-    display.setCursor(5,120);
-    display.println("No Task Today");//13car
+    display.setCursor(5,160);
+    display.println("0 Task Today");//13car
 
      weatherData currentWeather = getWeatherData();
 
     int8_t temperature = currentWeather.temperature;
-    String stemp;
-    stemp.concat(String(currentWeather.temperature));
-    stemp.concat(" C");
-    display.setCursor(5,140);
-    display.println(stemp);
+    display.setCursor(60,130);
+    display.setFont(&UbuntuMonoBold18pt7b);
+    display.println(temperature);
+    
 
     const unsigned char* weatherIcon;
     int16_t weatherConditionCode = currentWeather.weatherConditionCode;
@@ -241,9 +242,11 @@ void Watchy7SEG::drawPitBoy(){
     weatherIcon = drizzle;
     }else if(weatherConditionCode >=200){//Thunderstorm
     weatherIcon = thunderstorm;
-    }else
-    return;
-    display.drawBitmap(80,120, weatherIcon, WEATHER_ICON_WIDTH, WEATHER_ICON_HEIGHT, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
-
+    }else{
+    weatherIcon = thunderstorm;    
+    }
+    
+    display.drawBitmap(5,100, weatherIcon, WEATHER_ICON_WIDTH, WEATHER_ICON_HEIGHT, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.invertDisplay(true);
 
 }

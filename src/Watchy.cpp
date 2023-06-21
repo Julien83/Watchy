@@ -348,7 +348,7 @@ void Watchy::showAlarme() {
 void Watchy::showSleep() {
   display.setFullWindow();
   display.fillScreen(GxEPD_BLACK);
-  display.drawBitmap(0, 0, pictureSleep, 200, 200,GxEPD_WHITE);
+  display.drawBitmap(0, 0, Vault_boy200, 200, 200,GxEPD_WHITE);
   display.display(true);
 }
 
@@ -457,7 +457,7 @@ void Watchy::showCalendar(tmElements_t calendarTime) {
 
   display.setFullWindow();
   display.fillScreen(DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);
-  display.setFont(&FreeMonoBold8pt7b);
+  display.setFont(&AFreeMonoBold8pt7b);
   display.setTextColor(DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
   //Centre calendar word
   display.getTextBounds("Calendar",x,y,&x1,&y1,&w,&h);

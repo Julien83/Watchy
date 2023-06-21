@@ -15,6 +15,7 @@
 #include <Fonts/includefont.h>
 #include "DSEG7_Classic_Bold_53.h"
 #include "DSEG7_Classic_Bold_25.h"
+#include "AFreeMonoBold8pt7b.h"
 #include "Display.h"
 #include "WatchyRTC.h"
 #include "BLE.h"
